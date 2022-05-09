@@ -1,0 +1,227 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:"Calibri Light";
+	panose-1:2 15 3 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0,5cm;
+	margin-bottom:8.0pt;
+	margin-left:0cm;
+	line-height:106%;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+h2
+	{mso-style-link:"Überschrift 2 Zchn";
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:18.0pt;
+	font-family:"Times New Roman",serif;}
+h3
+	{mso-style-link:"Überschrift 3 Zchn";
+	margin-top:2.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	line-height:106%;
+	page-break-after:avoid;
+	font-size:12.0pt;
+	font-family:"Calibri Light",sans-serif;}
+p.msonormal0, li.msonormal0, div.msonormal0
+	{mso-style-name:msonormal;
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Times New Roman",serif;}
+p.msochpdefault, li.msochpdefault, div.msochpdefault
+	{mso-style-name:msochpdefault;
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Calibri",sans-serif;}
+p.msopapdefault, li.msopapdefault, div.msopapdefault
+	{mso-style-name:msopapdefault;
+	margin-right:0cm;
+	margin-bottom:8.0pt;
+	margin-left:0cm;
+	line-height:106%;
+	font-size:12.0pt;
+	font-family:"Times New Roman",serif;}
+span.berschrift2Zchn
+	{mso-style-name:"Überschrift 2 Zchn";
+	mso-style-link:"Überschrift 2";
+	font-family:"Calibri Light",sans-serif;
+	color:#2E74B5;}
+span.berschrift3Zchn
+	{mso-style-name:"Überschrift 3 Zchn";
+	mso-style-link:"Überschrift 3";
+	font-family:"Calibri Light",sans-serif;
+	color:#1F4D78;}
+table, th, td
+	{border: 1px solid black;  border-collapse: collapse;  padding: 5px;}
+table, td, p
+  {text-align: center;}
+.MsoChpDefault
+	{font-size:10.0pt;
+	font-family:"Calibri",sans-serif;}
+.MsoPapDefault
+	{margin-bottom:8.0pt;
+	line-height:106%;}
+@page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+-->
+</style>
+<script>
+
+var getJSON = function(url, callback) {
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+
+    xhr.onload = function() {
+
+        var status = xhr.status;
+
+        if (status == 200) {
+            callback(null, xhr.response);
+        } else {
+            callback(status);
+        }
+    };
+
+    xhr.send();
+};
+
+var loadData = function(){
+  document.getElementById("state").innerHTML = "loading";
+
+  getJSON('/status',  function(err, data) {
+
+  if (err != null) {
+    console.error(err);
+  } else {
+    document.getElementById("state").innerHTML = "";
+    document.getElementById("venting").innerHTML = data.status;
+    document.getElementById("T1").innerHTML = data.sensors.outdoor[0].T.toFixed(1);
+    document.getElementById("H1").innerHTML = data.sensors.outdoor[0].H.toFixed(1);
+    document.getElementById("P1").innerHTML = data.sensors.outdoor[0].P.toFixed(1);
+    document.getElementById("D1").innerHTML = data.sensors.outdoor[0].D.toFixed(1);
+    document.getElementById("T2").innerHTML = data.sensors.indoor[0].T.toFixed(1);
+    document.getElementById("H2").innerHTML = data.sensors.indoor[0].H.toFixed(1);
+    document.getElementById("P2").innerHTML = data.sensors.indoor[0].P.toFixed(1);
+    document.getElementById("D2").innerHTML = data.sensors.indoor[0].D.toFixed(1);
+  }
+})};
+
+window.setInterval(loadData, 5000);
+
+window.onload = loadData;
+
+</script>
+</head>
+
+<body lang=DE>
+
+<a href="/log">show log</a>
+<a href="/log/on">log on</a>
+<a href="/log/off">log off</a>
+<a href="/info">info</a>
+<a href="/errors.txt">error</a>
+
+<div class=WordSection1>
+
+<h2>Lüftung des Kellers</h2>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<h3>Status:</h3>
+<div id = "venting">&nbsp;</div>
+<div>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<table class=MsoNormalTable" border-spacing="10px">
+ <tr>
+  <th width=95 >
+  <p class=MsoNormal >&nbsp;</p>
+  </th>
+  <th width=89 >
+  <p class=MsoNormal >Temperatur (°C)</p>
+  </th>
+  <th width=68 >
+  <p class=MsoNormal >Rel. Feuchte (%)</p>
+  </th>
+  <th width=76 >
+  <p class=MsoNormal >Taupunkt (°C)</p>
+  </th>
+  <th width=76 >
+  <p class=MsoNormal >Lufthruck (hPa)</p>
+  </th>
+ </tr>
+ <tr>
+  <th width=95 >
+  <p class=MsoNormal >Außensensor</p>
+  </th>
+  <td width=89 >
+  <p id = "T1" class=MsoNormal align=right>T1&nbsp;</p>
+  </td>
+  <td width=68 >
+  <p id = "H1"  class=MsoNormal align=right>H1&nbsp;</p>
+  </td>
+  <td ;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p  id = "D1" class=MsoNormal align=right>D1&nbsp;</p>
+  </td>
+  <td ;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p  id = "P1" class=MsoNormal align=right>P1&nbsp;</p>
+  </td>
+ </tr>
+ <tr>
+  <th width=95 >
+  <p class=MsoNormal >Kellersensor</p>
+  </th>
+  <td width=89 >
+  <p id = "T2" class=MsoNormal align=right>T2&nbsp;</p>
+  </td>
+  <td width=68 >
+  <p id = "H2" class=MsoNormal align=right>H2&nbsp;</p>
+  </td>
+  <td ;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p id = "D2" class=MsoNormal align=right>D2&nbsp;</p>
+  </td>
+  <td ;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p id = "P2" class=MsoNormal align=right>P2&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal>&nbsp;</p>
+
+</div>
+
+</div>
+<div id = "state"></div>
+</body>
+
+</html>

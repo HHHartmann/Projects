@@ -1,0 +1,42 @@
+{
+	"startup": "LED-strip-remote.lua",
+	"debug": true,
+	"runLogger": false,
+	"runFTPServer": false,
+	"runTelnetServer": false,
+	"devices": {
+		"3942779": {
+			"HW": "DevBoard1",
+			"name": "Kellersensor",
+			"type": "SEN",
+			"startup": "Gossip_Test.lua",
+			"startup": "Sensor.lua",
+			"sensors": [{
+          "location": "Outdoor",
+					"id": 0,
+					"sda": 6,
+					"scl" : 5,
+					"addr" : 1
+				}, {
+          "location": "Indoor",
+					"id" : 0,
+					"sda" : 1,
+					"scl" : 2,
+					"addr" : 1
+				}
+			]
+		},
+		"2719629": {
+			"HW": "DevBoard1",
+			"name": "Ventilator",
+			"type": "VEN",
+			"startup": "Sensor.lua",
+			"relais": 4
+		}
+	},
+	"HW": {
+		"DevBoard1": {
+			"signalPin": 4
+		}
+	}
+}

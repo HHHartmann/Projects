@@ -1,0 +1,155 @@
+. Got IP: 192.168.8.100
+starting step	4
+heap: 	34736	35560
+Starting ftp server
+32544	Server created: (userdata) userdata: 0x3fff17ec
+Starting telnet server
+heap: 	30640	32920
+starting step	5
+Starting http server
+Adding plugin nr	1	function: 0x3fff14d0	table: 0x3fff1d58
+Adding plugin nr	2	function: 0x3fff14d0	table: 0x3fff3278
+Adding plugin nr	3	function: 0x3fff14d0	table: 0x3fff38c8
+Adding plugin nr	4	function: 0x3fff14d0	table: 0x3fff4310
+heap: 	27104	29440
+starting step	6
+Starting ApplicationStart.lua
+{
+	"startup": "LED-strip-remote.lua",
+	"startup": "Sensor.lua",
+	"debug": true
+}
+
+starting	Sensor.lua
+Adding plugin nr	5	function: 0x3fff14d0	table: 0x3fff7038
+heap: 	15704	22232
+Telnet server started (piped)(23392 mem free, 192.168.8.100)
+T=23.07°C, pressure=1023.945 HPa, humidity=49.041%, dewpoint=11.80°C
+T=23.07°C, pressure=1023.947 HPa, humidity=49.111%, dewpoint=11.82°C
+T=23.07°C, pressure=1023.949 HPa, humidity=49.133%, dewpoint=11.83°C
+T=23.07°C, pressure=1023.950 HPa, humidity=49.111%, dewpoint=11.82°C
+testing
+T=23.07°C, pressure=1023.952 HPa, humidity=48.995%, dewpoint=11.79°C
+got	-1
+T=23.07°C, pressure=1023.954 HPa, humidity=48.879%, dewpoint=11.75°C
+T=23.07°C, pressure=1023.956 HPa, humidity=48.914%, dewpoint=11.76°C
+T=23.07°C, pressure=1023.954 HPa, humidity=48.959%, dewpoint=11.77°C
+T=23.07°C, pressure=1023.956 HPa, humidity=48.971%, dewpoint=11.78°C
+testing
+removing PANIC_GUARD
+T=23.07°C, pressure=1023.957 HPa, humidity=48.983%, dewpoint=11.78°C
+got	-1
+~~~File list START~~~
+config.json     : 86 bytes
+Logger.lua      : 448 bytes
+_init.lua       : 3825 bytes
+luac.out.old    : 98945 bytes
+Sensor.lua      : 1374 bytes
+init.lua        : 767 bytes
+LFS_float_20220314-1446.img : 98990 bytes
+~~~File list END~~~
+> Total : 3128213 bytes
+Used  : 291913 bytes
+Remain: 2836300 bytes
+
+> T=23.07°C, pressure=1023.957 HPa, humidity=48.995%, dewpoint=11.79°C
+~~~File list START~~~
+config.json     : 86 bytes
+Logger.lua      : 448 bytes
+_init.lua       : 3825 bytes
+luac.out.old    : 98945 bytes
+Sensor.lua      : 1374 bytes
+init.lua        : 767 bytes
+LFS_float_20220314-1446.img : 98990 bytes
+~~~File list END~~~
+> Total : 3128213 bytes
+Used  : 291913 bytes
+Remain: 2836300 bytes
+
+> T=23.07°C, pressure=1023.957 HPa, humidity=48.995%, dewpoint=11.79°C
+~~~File list START~~~
+config.json     : 86 bytes
+Logger.lua      : 448 bytes
+_init.lua       : 3825 bytes
+luac.out.old    : 98945 bytes
+Sensor.lua      : 1374 bytes
+init.lua        : 767 bytes
+LFS_float_20220314-1446.img : 98990 bytes
+~~~File list END~~~
+> Total : 3128213 bytes
+Used  : 291913 bytes
+Remain: 2836300 bytes
+
+> T=23.07°C, pressure=1023.959 HPa, humidity=48.983%, dewpoint=11.78°C
+~~~File list START~~~
+config.json     : 86 bytes
+Logger.lua      : 448 bytes
+_init.lua       : 3825 bytes
+luac.out.old    : 98945 bytes
+Sensor.lua      : 1374 bytes
+init.lua        : 767 bytes
+LFS_float_20220314-1446.img : 98990 bytes
+~~~File list END~~~
+> Total : 3128213 bytes
+Used  : 291913 bytes
+Remain: 2836300 bytes
+
+> T=23.07°C, pressure=1023.959 HPa, humidity=48.959%, dewpoint=11.77°C
+~~~File list START~~~
+config.json     : 86 bytes
+Logger.lua      : 448 bytes
+_init.lua       : 3825 bytes
+luac.out.old    : 98945 bytes
+Sensor.lua      : 1374 bytes
+init.lua        : 767 bytes
+LFS_float_20220314-1446.img : 98990 bytes
+~~~File list END~~~
+> Total : 3128213 bytes
+Used  : 291913 bytes
+Remain: 2836300 bytes
+
+> testing
+T=23.07°C, pressure=1023.959 HPa, humidity=48.902%, dewpoint=11.76°C
+~~~File list START~~~
+config.json     : 86 bytes
+Logger.lua      : 448 bytes
+_init.lua       : 3825 bytes
+luac.out.old    : 98945 bytes
+Sensor.lua      : 1374 bytes
+init.lua        : 767 bytes
+LFS_float_20220314-1446.img : 98990 bytes
+~~~File list END~~~
+> Total : 3128213 bytes
+Used  : 291913 bytes
+Remain: 2836300 bytes
+
+> got	-1
+T=23.07°C, pressure=1023.961 HPa, humidity=48.868%, dewpoint=11.75°C
+~~~File list START~~~
+config.json     : 86 bytes
+Logger.lua      : 448 bytes
+_init.lua       : 3825 bytes
+luac.out.old    : 98945 bytes
+Sensor.lua      : 1374 bytes
+init.lua        : 767 bytes
+LFS_float_20220314-1446.img : 98990 bytes
+~~~File list END~~~
+> Total : 3128213 bytes
+Used  : 291913 bytes
+Remain: 2836300 bytes
+
+> T=23.07°C, pressure=1023.961 HPa, humidity=48.868%, dewpoint=11.75°C
+T=23.07°C, pressure=1023.958 HPa, humidity=48.879%, dewpoint=11.75°C
+T=23.07°C, pressure=1023.960 HPa, humidity=48.902%, dewpoint=11.76°C
+testing
+T=23.07°C, pressure=1023.960 HPa, humidity=48.937%, dewpoint=11.77°C
+got	-1
+T=23.07°C, pressure=1023.960 HPa, humidity=49.018%, dewpoint=11.79°C
+T=23.07°C, pressure=1023.958 HPa, humidity=49.180%, dewpoint=11.84°C
+executing plugin Nr	1	function: 0x3fff14d0	table: 0x3fff1d58
+got	table: 0x3fff1290	table: 0x3fff8ed0	function: 0x3ffefcc8	table: 0x3fff1d58
+Matching	/log	/info
+executing plugin Nr	2	function: 0x3fff14d0	table: 0x3fff3278
+got	table: 0x3fff1290	table: 0x3fff8ed0	function: 0x3fff0240	table: 0x3fff3278
+Matching	/log	/log
+T=23.07°C, pressure=1023.958 HPa, humidity=49.423%, dewpoint=11.92°C
