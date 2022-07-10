@@ -41,9 +41,11 @@ if config.type == "SEN" then
     setupI2c(c1)
     print("bme280.setup")
     status, err = pcall(function() s1 = bme280.setup(c1.id, c1.addr, nil, nil, nil, 0) end) -- initialize to sleep mode
-    setupI2c(c2)
-    print("bme280.setup")
-    status, err = pcall(function() s2 = bme280.setup(c2.id, c2.addr, nil, nil, nil, 0) end) -- initialize to sleep mode
+    if c2 ~= nil then
+      setupI2c(c2)
+      print("bme280.setup")
+      status, err = pcall(function() s2 = bme280.setup(c2.id, c2.addr, nil, nil, nil, 0) end) -- initialize to sleep mode
+    end
     print("done")
 end
 
@@ -61,13 +63,40 @@ local function on()
   gpio.write(signalPin, gpio.LOW);  -- turn light on
 end
 
+local nextData
+local sending
+local function sendData(data)
+  if sending then
+    nextData = data
+    print("Defering sendData")
+    return
+  end
+  sending = true
+  local url = "http://industrial.api.ubidots.com/api/v1.6/devices/MyHome/"
+  local body = sjson.encode(data)
+  http.post(url, "X-Auth-Token: BBFF-g0qMTBSw6uDleQdFNoWJRNRZniWouS\r\nContent-Type: application/json\r\n", body, function(code, data)
+    if (code < 0) then
+      print("HTTP request failed")
+    end
+    print(code, data)
+    sending = false
+    if nextData then
+      local localData = nextData
+      nextData = nil
+      print("Executing defered sendData")
+      return sendData(localData)   -- tailcall
+    end
+  end)
+end
 
-local function validate(T, P, H)
-    if T and P and H then
-      local D = s2:dewpoint(H, T)
+
+local function validate(s, T, P, H)
+    if s and T and P and H then
+      local D = s:dewpoint(H, T)
       print(("T=%.2f°C, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f°C"):format(T, P, H, D))
       return {T=T, P=P, H=H, D=D}
     else
+      print(s, T, P, H)
       return nil
     end
 end
@@ -88,7 +117,8 @@ local function calculateGlobalState()
 
   local function getSensors(k,v)
     if v.data.sensordata then
-      return {a=v.data.sensordata[1], b=v.data.sensordata[2]}
+      -- return {a=v.data.sensordata[1], b=v.data.sensordata[2]}
+      return {a=v.data.sensordata[1]}
     else
       return {}
     end
@@ -149,8 +179,14 @@ local function calculateVentingState()
     status = "off"
     off()
   end
-  
   collectgarbage()
+  
+  local function vval(val) if val == "on" then return 1 else return 0 end end
+  local data = {}
+  data.venting = {{value=vval(status), context={status=statusText}}}
+  vval = nil
+  sendData(data)
+
   if (globalData.venting and globalData.venting.status == status and globalData.venting.statusText == statusText) then
     print("venting unchanged. Not pushing.")
     return
@@ -161,25 +197,44 @@ local function calculateVentingState()
   gossip.pushGossip(localData)
 end
 
+local function sendSensorData(sensordata)
+  local data = {}
+  data[sensordata.location.."_Temp"] = sensordata.T
+  data[sensordata.location.."_Press"] = sensordata.P
+  data[sensordata.location.."_Hum"] = sensordata.H
+  data[sensordata.location.."_Dewp"] = sensordata.D
+  return sendData(data)  -- tailcall
+end
 
 if config.type == "SEN" then  -- SEN = sensors
 
   localData.sensordata = {}
 
-  tmr.create():alarm(4500, tmr.ALARM_AUTO, function()
+  tmr.create():alarm(10600, tmr.ALARM_AUTO, function()
       collectgarbage()
-      setupI2c(c1)
-      s1:startreadout(function(T, P, H)
-          localData.sensordata[1] = validate(T, P, H)
-          localData.sensordata[1].location = c1.location
-          setupI2c(c2)
-          s2:startreadout(function(T, P, H)
-              localData.sensordata[2] = validate(T, P, H)
-              localData.sensordata[2].location = c2.location
+      if s1 ~= nil then 
+        setupI2c(c1)
+        s1:startreadout(function(T, P, H)
+            localData.sensordata[1] = validate(s1, T, P, H)
+            localData.sensordata[1].location = c1.location
+            sendSensorData(localData.sensordata[1])
+            if s2 ~= nil then 
+              node.task.post(function()
+                  setupI2c(c2)
+                  s2:startreadout(function(T, P, H)
+                      localData.sensordata[2] = validate(s2, T, P, H)
+                      localData.sensordata[2].location = c2.location
+                      sendSensorData(localData.sensordata[2])
+                      gossip.pushGossip(localData)
+                      calculateGlobalState()
+                  end)
+                end, node.task.LOW_PRIORITY)
+            else
               gossip.pushGossip(localData)
               calculateGlobalState()
-          end)
-      end)
+            end
+        end)
+      end
   end)
 
   gossip.updateCallback = function()

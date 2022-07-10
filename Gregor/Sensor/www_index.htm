@@ -120,6 +120,7 @@ var loadData = function(){
   } else {
     document.getElementById("state").innerHTML = "";
     document.getElementById("venting").innerHTML = data.status;
+    document.getElementById("name").innerHTML = data.name;
     document.getElementById("T1").innerHTML = data.sensors.outdoor[0].T.toFixed(1);
     document.getElementById("H1").innerHTML = data.sensors.outdoor[0].H.toFixed(1);
     document.getElementById("P1").innerHTML = data.sensors.outdoor[0].P.toFixed(1);
@@ -149,6 +150,7 @@ window.onload = loadData;
 <div class=WordSection1>
 
 <h2>Lüftung des Kellers</h2>
+<div id = "name">&nbsp;</div>
 
 <p class=MsoNormal>&nbsp;</p>
 

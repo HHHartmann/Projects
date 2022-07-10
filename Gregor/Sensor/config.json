@@ -5,23 +5,51 @@
 	"runFTPServer": false,
 	"runTelnetServer": false,
 	"devices": {
+		"3849658": {
+      "runFTPServer": false,
+			"HW": "WemosD1",
+			"name": "Wasser Sensor",
+			"type": "SEN",
+			"startup": "Wasser.lua",
+			"sensors": [{
+          "location": "Keller",
+					"pinLow": 5,
+					"pinHigh": 6
+				}
+			]
+		},
+		"3860104": {
+      "runFTPServer": false,
+			"HW": "WemosD1",
+			"name": "Wasser Alarm",
+			"type": "ALRM",
+			"startup": "Wasser.lua",
+      "alarm": 4
+		},
 		"3942779": {
 			"HW": "DevBoard1",
 			"name": "Kellersensor",
 			"type": "SEN",
-			"startup": "Gossip_Test.lua",
+			"startup": "Sensor.lua",
+			"sensors": [{
+          "location": "Indoor",
+					"id": 0,
+					"sda": 6,
+					"scl" : 5,
+					"addr" : 1
+				}
+			]
+		},
+    "11264530": {
+			"HW": "DevBoard1",
+			"name": "Gartensensor",
+			"type": "SEN",
 			"startup": "Sensor.lua",
 			"sensors": [{
           "location": "Outdoor",
 					"id": 0,
 					"sda": 6,
 					"scl" : 5,
-					"addr" : 1
-				}, {
-          "location": "Indoor",
-					"id" : 0,
-					"sda" : 1,
-					"scl" : 2,
 					"addr" : 1
 				}
 			]
@@ -36,6 +64,9 @@
 	},
 	"HW": {
 		"DevBoard1": {
+			"signalPin": 4
+		},
+		"WemosD1": {
 			"signalPin": 4
 		}
 	}

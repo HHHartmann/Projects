@@ -18,7 +18,7 @@
  /* Style Definitions */
  p.MsoNormal, li.MsoNormal, div.MsoNormal
 	{margin-top:0cm;
-	margin-right:0cm;
+	margin-right:0,5cm;
 	margin-bottom:8.0pt;
 	margin-left:0cm;
 	line-height:106%;
@@ -40,9 +40,7 @@ h3
 	line-height:106%;
 	page-break-after:avoid;
 	font-size:12.0pt;
-	font-family:"Calibri Light",sans-serif;
-	color:#1F4D78;
-	font-weight:normal;}
+	font-family:"Calibri Light",sans-serif;}
 p.msonormal0, li.msonormal0, div.msonormal0
 	{mso-style-name:msonormal;
 	margin-right:0cm;
@@ -73,6 +71,10 @@ span.berschrift3Zchn
 	mso-style-link:"Überschrift 3";
 	font-family:"Calibri Light",sans-serif;
 	color:#1F4D78;}
+table, th, td
+	{border: 1px solid black;  border-collapse: collapse;  padding: 5px;}
+table, td, p
+  {text-align: center;}
 .MsoChpDefault
 	{font-size:10.0pt;
 	font-family:"Calibri",sans-serif;}
@@ -108,95 +110,71 @@ var getJSON = function(url, callback) {
     xhr.send();
 };
 
-window.setInterval(function(){
-getJSON('http://192.168.178.47/status',  function(err, data) {
+var loadData = function(){
+  document.getElementById("state").innerHTML = "loading";
 
-    if (err != null) {
-        console.error(err);
-    } else {
-        document.getElementById("T1").innerHTML = data.sensor[0].T;
-        document.getElementById("H1").innerHTML = data.sensor[0].H;
-        document.getElementById("P1").innerHTML = data.sensor[0].P;
-        document.getElementById("D1").innerHTML = data.sensor[0].D;
-        document.getElementById("T2").innerHTML = data.sensor[1].T;
-        document.getElementById("H2").innerHTML = data.sensor[1].H;
-        document.getElementById("P2").innerHTML = data.sensor[1].P;
-        document.getElementById("D2").innerHTML = data.sensor[1].D;
-        document.getElementById("time").innerHTML = data.status;
-    }
-})}, 1000);
+  getJSON('/status',  function(err, data) {
+
+  if (err != null) {
+    console.error(err);
+  } else {
+    document.getElementById("state").innerHTML = "";
+    document.getElementById("alarm").innerHTML = data.status;
+    document.getElementById("name").innerHTML = data.name;
+    document.getElementById("Low").innerHTML = data.wasser.levelLow;
+    document.getElementById("High").innerHTML = data.wasser.levelHigh;
+  }
+})};
+
+window.setInterval(loadData, 5000);
+
+window.onload = loadData;
 
 </script>
 </head>
 
 <body lang=DE>
 
+<a href="/log">show log</a>
+<a href="/log/on">log on</a>
+<a href="/log/off">log off</a>
+<a href="/info">info</a>
+<a href="/errors.txt">error</a>
+
 <div class=WordSection1>
 
-<h2>Lüftung des Kellers</h2>
+<h2>Wassersensoren</h2>
+<div id = "name">&nbsp;</div>
 
 <p class=MsoNormal>&nbsp;</p>
 
-<h3>Status: State</h3>
-<div id = time></div>
+<h3>Status:</h3>
+<div id = "alarm">&nbsp;</div>
 <div>
 
 <p class=MsoNormal>&nbsp;</p>
 
-<table class=MsoNormalTable >
+<table class=MsoNormalTable" border-spacing="10px">
  <tr>
-  <td width=95 >
+  <th width=95 >
   <p class=MsoNormal >&nbsp;</p>
-  </td>
-  <td width=89 >
-  <p class=MsoNormal >Temperatur (°C)</p>
-  </td>
-  <td width=68 >
-  <p class=MsoNormal >Rel. Feuchte (%)</p>
-  </td>
-  <td width=76 >
-  <p class=MsoNormal >Taupunkt (°C)</p>
-  </td>
-  <td width=76 >
-  <p class=MsoNormal >Luftdruck (hPa)</p>
-  </td>
+  </th>
+  <th width=89 >
+  <p class=MsoNormal >Low Level reached</p>
+  </th>
+  <th width=68 >
+  <p class=MsoNormal >High Level reached</p>
+  </th>
  </tr>
  <tr>
-  <td width=95 >
-  <p class=MsoNormal >Außensensor</p>
-  </td>
+  <th width=95 >
+  <p class=MsoNormal >Keller</p>
+  </th>
   <td width=89 >
-  <p id = "T1" class=MsoNormal align=right>T1&nbsp;</p>
+  <p id = "Low" class=MsoNormal align=right>Low&nbsp;</p>
   </td>
   <td width=68 >
-  <p id = "H1"  class=MsoNormal align=right>H1&nbsp;</p>
-  </td>
-  <td ;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p  id = "D1" class=MsoNormal align=right>D1&nbsp;</p>
-  </td>
-  <td ;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p  id = "P1" class=MsoNormal align=right>P1&nbsp;</p>
-  </td>
- </tr>
- <tr>
-  <td width=95 >
-  <p class=MsoNormal >Kellersensor</p>
-  </td>
-  <td width=89 >
-  <p id = "T2" class=MsoNormal align=right>T2&nbsp;</p>
-  </td>
-  <td width=68 >
-  <p id = "H2" class=MsoNormal align=right>H2&nbsp;</p>
-  </td>
-  <td ;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p id = "D2" class=MsoNormal align=right>D2&nbsp;</p>
-  </td>
-  <td ;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p id = "P2" class=MsoNormal align=right>P2&nbsp;</p>
+  <p id = "High"  class=MsoNormal align=right>High&nbsp;</p>
   </td>
  </tr>
 </table>
@@ -206,7 +184,7 @@ getJSON('http://192.168.178.47/status',  function(err, data) {
 </div>
 
 </div>
-
+<div id = "state"></div>
 </body>
 
 </html>
