@@ -1,2 +1,6 @@
 print("starting", config.startup)
-return dofile(config.startup)  -- tail call
+if config.startup then
+  return dofile(config.startup)  -- tail call
+else
+  print("no startup configured")
+end

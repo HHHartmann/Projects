@@ -1,70 +1,109 @@
 {
-	"startup": "LED-strip-remote.lua",
 	"debug": true,
 	"runLogger": false,
 	"runFTPServer": false,
 	"runTelnetServer": false,
+	"runGossip": true,
+  "smallFs": false,
 	"devices": {
+		"13175857": {
+			"name": "Schalter1",
+			"HW": "BasicR2",
+			"startup": "Sensor.lua",
+			"type": "VEN"
+		},
 		"3849658": {
-      "runFTPServer": false,
-			"HW": "WemosD1",
 			"name": "Wasser Sensor",
-			"type": "SEN",
+			"HW": "WemosD1",
 			"startup": "Wasser.lua",
+			"type": "SEN",
 			"sensors": [{
-          "location": "Keller",
+					"location": "Keller",
 					"pinLow": 5,
 					"pinHigh": 6
 				}
 			]
 		},
 		"3860104": {
-      "runFTPServer": false,
-			"HW": "WemosD1",
 			"name": "Wasser Alarm",
-			"type": "ALRM",
+			"HW": "WemosD1",
 			"startup": "Wasser.lua",
-      "alarm": 4
+			"type": "ALRM",
+			"alarm": 4
+		},
+		"5937828": {
+			"name": "der neue",
+			"HW": "WemosD1",
+			"startup": "Sensor.lua",
+      "smallFs": true,
+			"type": "VEN",
+			"relais": 4
 		},
 		"3942779": {
-			"HW": "DevBoard1",
 			"name": "Kellersensor",
-			"type": "SEN",
+			"HW": "DevBoard1",
 			"startup": "Sensor.lua",
+    	"runGossip": false,
+			"startup": "Meter.lua",
+			"type": "SEN",
 			"sensors": [{
-          "location": "Indoor",
+					"location": "Indoor",
 					"id": 0,
 					"sda": 6,
-					"scl" : 5,
-					"addr" : 1
+					"scl": 5,
+					"addr": 1
 				}
 			]
 		},
-    "11264530": {
-			"HW": "DevBoard1",
+		"11264530": {
 			"name": "Gartensensor",
-			"type": "SEN",
+			"HW": "DevBoard1",
 			"startup": "Sensor.lua",
+			"type": "SEN",
 			"sensors": [{
-          "location": "Outdoor",
+					"location": "Outdoor",
 					"id": 0,
 					"sda": 6,
-					"scl" : 5,
-					"addr" : 1
+					"scl": 5,
+					"addr": 1
 				}
 			]
 		},
 		"2719629": {
-			"HW": "DevBoard1",
 			"name": "Ventilator",
-			"type": "VEN",
+			"HW": "DevBoard1",
 			"startup": "Sensor.lua",
+			"type": "VEN",
 			"relais": 4
-		}
+		},
+		"15683021": {
+			"name": "LED-KellerTreppe",
+			"HW": "DevBoard1",
+			"startup": "LED-strip-remote.lua",
+			"runGossip": false,
+			"runTelnetServer": true,
+			"leds": 33,
+			"channels": 3,
+			"layout": ["g", "r", "b"]
+		},
+    "3649586": {
+			"name": "Batt1",
+			"HW": "BatteryPack",
+			"_startup": "LED-strip-remote.lua"
+    }
 	},
 	"HW": {
+		"BatteryPack": {
+			"signalPin": 4
+		},
 		"DevBoard1": {
 			"signalPin": 4
+		},
+		"BasicR2": {
+      "smallFs": true,
+			"signalPin": 7,
+			"relaisPin": 6,
+			"pushButtonPin": 3
 		},
 		"WemosD1": {
 			"signalPin": 4

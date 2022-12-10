@@ -1,5 +1,0 @@
-{
-	"startup": "LED-strip-remote.lua",
-	"startup": "Sensor.lua",
-	"debug": true
-}
