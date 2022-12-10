@@ -1,0 +1,212 @@
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:"Calibri Light";
+	panose-1:2 15 3 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0,5cm;
+	margin-bottom:8.0pt;
+	margin-left:0cm;
+	line-height:106%;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+h2
+	{mso-style-link:"Überschrift 2 Zchn";
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:18.0pt;
+	font-family:"Times New Roman",serif;}
+h3
+	{mso-style-link:"Überschrift 3 Zchn";
+	margin-top:2.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	line-height:106%;
+	page-break-after:avoid;
+	font-size:12.0pt;
+	font-family:"Calibri Light",sans-serif;}
+p.msonormal0, li.msonormal0, div.msonormal0
+	{mso-style-name:msonormal;
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Times New Roman",serif;}
+p.msochpdefault, li.msochpdefault, div.msochpdefault
+	{mso-style-name:msochpdefault;
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Calibri",sans-serif;}
+p.msopapdefault, li.msopapdefault, div.msopapdefault
+	{mso-style-name:msopapdefault;
+	margin-right:0cm;
+	margin-bottom:8.0pt;
+	margin-left:0cm;
+	line-height:106%;
+	font-size:12.0pt;
+	font-family:"Times New Roman",serif;}
+span.berschrift2Zchn
+	{mso-style-name:"Überschrift 2 Zchn";
+	mso-style-link:"Überschrift 2";
+	font-family:"Calibri Light",sans-serif;
+	color:#2E74B5;}
+span.berschrift3Zchn
+	{mso-style-name:"Überschrift 3 Zchn";
+	mso-style-link:"Überschrift 3";
+	font-family:"Calibri Light",sans-serif;
+	color:#1F4D78;}
+table, th, td
+	{border: 1px solid black;  border-collapse: collapse;  padding: 5px;}
+table, td, p
+  {text-align: center;}
+.MsoChpDefault
+	{font-size:10.0pt;
+	font-family:"Calibri",sans-serif;}
+.MsoPapDefault
+	{margin-bottom:8.0pt;
+	line-height:106%;}
+@page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+-->
+</style>
+<!--script src="https://unpkg.com/petite-vue" defer init></script-->
+</head>
+
+<body lang=DE>
+<div v-scope="{}">
+
+<a href="/log">show log</a>
+<a href="/log/on">log on</a>
+<a href="/log/off">log off</a>
+<a href="/info">info</a>
+<a href="/errors.txt">error</a>
+
+<div class=WordSection1>
+
+<h2>Stromzähler</h2>
+{{app1.data.name}}
+
+<p class=MsoNormal>&nbsp;</p>
+
+<h3>Status:</h3>
+{{app1.data.status}}
+<div>
+
+<p class=MsoNormal>&nbsp;</p>
+
+</div>
+
+<table class=MsoNormalTable" border-spacing="10px">
+ <tr>
+  <th width=95 >
+  <p class=MsoNormal >&nbsp;</p>
+  </th>
+  <th width=89 >
+  <p class=MsoNormal >Gesamtverbrauch (KWh)</p>
+  </th>
+  <th width=68 >
+  <p class=MsoNormal >aktueller Bedarf (W)</p>
+  </th>
+ </tr>
+ <tr v-for="item in app1.data.meter">
+  <th width=95 >
+  <p class=MsoNormal ></p>
+  </th>
+  <td width=89 >
+  <p class=MsoNormal align=right>{{ item.KWh }}</p>
+  </td>
+  <td width=68 >
+  <p class=MsoNormal align=right>{{ item.W }}</p>
+  </td>
+ </tr>
+</table>
+
+
+
+<p class=MsoNormal>&nbsp;</p>
+
+</div>
+
+{{ app1.state }}&nbsp;
+<br>
+Empfang:&nbsp{{app1.data.rssi}}<span style="background-color: #CD5C5C;"> sadsad </span>
+</div>
+
+
+<script type="module">
+import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
+
+const app1 = reactive({
+
+    data: {},
+
+    getJSON(url, callback) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'json';
+
+        xhr.onload = function() {
+
+            var status = xhr.status;
+
+            if (status == 200) {
+                callback(null, xhr.response);
+            } else {
+                callback(status);
+            }
+        };
+
+        xhr.send();
+    },
+
+    loadData(url){
+      app1.state = "loading";
+
+      app1.getJSON(url,  function(err, data1) {
+
+        if (err != null) {
+          console.error(err);
+          app1.state = err;
+        } else {
+          app1.data = data1
+          app1.state = "";
+        }
+      })
+    }
+})
+
+ createApp({
+    // share it with app scopes
+    app1
+  }).mount()
+
+let url = '/status'
+//let url = 'http://192.168.178.47/status'
+window.setInterval(() => app1.loadData(url), 5000);
+
+window.onload = () => app1.loadData(url);
+
+</script>
+</body>
+
+</html>
