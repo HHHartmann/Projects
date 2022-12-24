@@ -75,6 +75,8 @@ local function main(framework)
   UDP.register("button", handleButton)
 end
 
+-- set leds as soon as possible
+node.startup({command="ws2812.init(ws2812.MODE_SINGLE) ws2812.write(string.rep(string.char(0, 0, 255),33)) dofile('init.lua')"})
 
 local framework = dofile("SynchronousFramework.lua")
 framework.start(main, framework)

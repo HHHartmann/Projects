@@ -3,7 +3,8 @@
   local brightness = 255
   local effect = "static"
   local replay
-
+  local strip_buffer
+  
   local getBMP = dofile("decode_BMP.lua")
   local bmp, lineNr, timer, lineBuf = nil, 1, tmr.create()
 
@@ -41,6 +42,10 @@
     setLED()
   end
 
+  local function mapChannels(r,g,b)
+    return g,r,b
+  end
+
   local function stopBMPPlayer()
     timer:stop()
     timer:unregister()
@@ -49,12 +54,13 @@
 
   local function BMPPlay()
     local buf = bmp.GetLine(lineNr)
---    print(#buf, "%q"%buf)
     lineBuf:replace(buf)
+    lineBuf:map(function(b,g,r) return r,g,b end)
+--    print(#buf, "%q"%buf)
+    lineBuf:map(mapChannels, nil, nil, nil, buf)
     buf=nil
     collectgarbage()
 --    print(lineBuf)
-    lineBuf:map(function(b,g,r) return g,r,b end)
     ws2812.write(lineBuf)
     lineNr = lineNr+1
     local w,h = bmp.Size()
@@ -74,7 +80,7 @@
   local function startBMPPlayer(_replay)
     replay = _replay
     lineNr = 1
-    lineBuf = pixbuf.newBuffer(bmp.Size(),3)
+    lineBuf = pixbuf.newBuffer(bmp.Size(),config.channels)
     BMPPlay()
     timer:register(delay+2, tmr.ALARM_AUTO, BMPPlay) 
     timer:start()
@@ -110,13 +116,13 @@
 
     local r,g,b = unpack(t)
     print(r,g,b)
-    strip_buffer:fill(g,r,b)
+    strip_buffer:fill(mapChannels(r,g,b))
     ws2812.write(strip_buffer)
-    ws2812_effects.set_color(g,r,b)
+    ws2812_effects.set_color(mapChannels(r,g,b))
   end 
 
   ws2812.init(ws2812.MODE_SINGLE)
-  strip_buffer = pixbuf.newBuffer(33, 3)
+  strip_buffer = pixbuf.newBuffer(config.leds, config.channels)
 --  strip_buffer = pixbuf.newBuffer(60*2, 3)
   ws2812_effects.init(strip_buffer)
   ws2812_effects.set_color(255,255,255)
