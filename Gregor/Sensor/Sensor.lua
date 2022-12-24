@@ -2,17 +2,6 @@ local c1,c2
 
 LINQ = dofile("LINQ.lua")
 
-node.setonerror(function(s)
-     collectgarbage()
-     local f = file.open("www_errors.txt","a")
-     f:writeline("==========================: ")
-     f:writeline(s)
-     f:writeline("")
-     f:close()
-     print(s)
-     node.restart()
-  end)
-
 local localData = {}
 
 local globalData = {sensordata = {}, venting = {}}
@@ -22,6 +11,7 @@ if config.type == "SEN" then
   c2 = config.sensors[2]
 end
 local signalPin = config.signalPin
+local relaisPin = config.relaisPin
 
 local dewpointThreshold = 5
 local minHumidity = 50
@@ -35,9 +25,8 @@ local function setupI2c(config)
     print(status, err)
 end
 
-local bme280 = node.LFS.bme280()
-
 if config.type == "SEN" then
+    local bme280 = node.LFS.bme280() -- needed to hide legacy bme280 module
     setupI2c(c1)
     print("bme280.setup")
     status, err = pcall(function() s1 = bme280.setup(c1.id, c1.addr, nil, nil, nil, 0) end) -- initialize to sleep mode
@@ -52,20 +41,23 @@ end
 local status = "Unbekannt"
 
 gpio.mode(signalPin, gpio.OUTPUT)
-gpio.write(signalPin, gpio.HIGH);  -- turn light off
+if relaisPin then gpio.mode(relaisPin, gpio.OUTPUT) end
 
 
 local function off()
-  gpio.write(signalPin, gpio.HIGH);  -- turn light off
+  gpio.write(signalPin, gpio.HIGH)  -- turn light off
+  if relaisPin then gpio.write(relaisPin, gpio.HIGH) end  -- turn off
 end
 
 local function on()
-  gpio.write(signalPin, gpio.LOW);  -- turn light on
+  gpio.write(signalPin, gpio.LOW)  -- turn light on
+  if relaisPin then gpio.write(relaisPin, gpio.LOW) end  -- turn on
 end
 
 local nextData
 local sending
 local function sendData(data)
+  --[[ don't send for now
   if sending then
     nextData = data
     print("Defering sendData")
@@ -87,13 +79,14 @@ local function sendData(data)
       return sendData(localData)   -- tailcall
     end
   end)
+  ]]
 end
 
 
 local function validate(s, T, P, H)
     if s and T and P and H then
       local D = s:dewpoint(H, T)
-      print(("T=%.2f캜, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f캜"):format(T, P, H, D))
+      print(("T=%.2f째C, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f째C"):format(T, P, H, D))
       return {T=T, P=P, H=H, D=D}
     else
       print(s, T, P, H)
@@ -124,9 +117,10 @@ local function calculateGlobalState()
     end
   end
 
+  collectgarbage()
   -- TODO: remove "where v.data.sensordata" after LINQ bug with empty selectMany is fixed
   print("networkState:", sjson.encode(gossip.networkState))
-  local sensors = LINQ(gossip.networkState):where(isValidData):where(isSensor):selectMany(getSensors):toListValue();
+  local sensors = LINQ(gossip.networkState):where(isValidData):where(isSensor):selectMany(getSensors):toListValue()
   collectgarbage()
 
   print("sensordaten:", sjson.encode(sensors))
@@ -141,7 +135,7 @@ local function calculateGlobalState()
   globalData.sensors = {indoor=indoor,outdoor=outdoor }
 
   local _, venting = LINQ(gossip.networkState):where(isValidData):where(isVenting):select(function(k,v) return k, v.data.venting end):first()
-  venting = venting or {statusText = "Keine Daten zur L&uuml;ftung verf&uuml;gbar"}
+  venting = venting or {statusText = "Keine Daten zur L체ftung verf체gbar"}
   print("venting:", sjson.encode(venting))
   collectgarbage()
 
@@ -163,19 +157,19 @@ local function calculateVentingState()
   end
   
   if #indoor < 1 or #outdoor < 1 then 
-    statusText = "L&uuml;ftung aus, keine Sensordaten"
+    statusText = "L체ftung aus, keine Sensordaten"
     status = "off"
     off()
   elseif indoor[1].H < minHumidity then
-    statusText = "L&uuml;ftung aus, Nicht feucht genug zum l&uuml;ften"
+    statusText = "L체ftung aus, Nicht feucht genug zum l체ften"
     status = "off"
     off()
   elseif outdoor[1].D + dewpointThreshold < indoor[1].D then
-    statusText = "L&uuml;ftung l&auml;uft"
+    statusText = "L체ftung l채uft"
     status = "on"
     on()
   else
-    statusText = "L&uuml;ftung aus, Feuchtigkeit au&szlig;en zu hoch"
+    statusText = "L체ftung aus, Feuchtigkeit au횩en zu hoch"
     status = "off"
     off()
   end
@@ -215,6 +209,8 @@ if config.type == "SEN" then  -- SEN = sensors
       if s1 ~= nil then 
         setupI2c(c1)
         s1:startreadout(function(T, P, H)
+            print(1,T,P,H)
+            if not T or not P or not H then return end
             localData.sensordata[1] = validate(s1, T, P, H)
             localData.sensordata[1].location = c1.location
             sendSensorData(localData.sensordata[1])
@@ -222,6 +218,7 @@ if config.type == "SEN" then  -- SEN = sensors
               node.task.post(function()
                   setupI2c(c2)
                   s2:startreadout(function(T, P, H)
+                      print(2,T,P,H)
                       localData.sensordata[2] = validate(s2, T, P, H)
                       localData.sensordata[2].location = c2.location
                       sendSensorData(localData.sensordata[2])
@@ -253,10 +250,10 @@ if config.type == "SEN" then  -- SEN = sensors
       res:send(function(res)
           collectgarbage()
           local sensordata = localData.sensordata[1]
-          res:send(("T=%.2f캜, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f캜"):format(sensordata.T, sensordata.P, sensordata.H, sensordata.D))
+          res:send(("T=%.2f째C, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f째C"):format(sensordata.T, sensordata.P, sensordata.H, sensordata.D))
           res:send("\r\n")
           local sensordata = localData.sensordata[2]
-          res:send(("T=%.2f캜, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f캜"):format(sensordata.T, sensordata.P, sensordata.H, sensordata.D))
+          res:send(("T=%.2f째C, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f째C"):format(sensordata.T, sensordata.P, sensordata.H, sensordata.D))
           res:finish()
           collectgarbage()
       end)
@@ -283,7 +280,7 @@ WebServer.route("/status", function(req, res)
     res:send_header("Content-Type", "application/json")
     res:send_header("Access-Control-Allow-Origin", "*")
   
-    local status = {sensors = globalData.sensors, status = globalData.venting.statusText, name = config.name }
+    local status = {sensors = globalData.sensors, status = globalData.venting.statusText, name = config.name, rssi = wifi.sta.getrssi() }
     status = sjson.encode(status)
     print(status)
     res:send(status)
@@ -292,6 +289,6 @@ WebServer.route("/status", function(req, res)
     collectgarbage()
 end)
 
-WebServer.staticRoute("www")
-
+file.remove("www_index.htm")
+WebServer.staticRoute("www_sensor")
 

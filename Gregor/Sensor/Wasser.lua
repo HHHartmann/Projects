@@ -2,17 +2,6 @@ LINQ = dofile("LINQ.lua")
 
 local sensor
 
-node.setonerror(function(s)
-     collectgarbage()
-     local f = file.open("www_errors.txt","a")
-     f:writeline("==========================: ")
-     f:writeline(s)
-     f:writeline("")
-     f:close()
-     print(s)
-     node.restart()
-  end)
-
 local localData = {}
 
 local globalData = {wasser = {}, alarm = {}}
@@ -99,17 +88,19 @@ local function calculateGlobalState()
   globalData.wasser = wasser
 
   local _, alarm = LINQ(gossip.networkState):where(isValidData):where(isAlarm):select(function(k,v) return k, v.data.alarm end):first()
-  alarm = alarm or {statusText = "Keine Daten zum Alarm verf&uuml;gbar", status = 0}
+  alarm = alarm or {statusText = "Keine Daten zum Alarm verfügbar", status = 0}
   print("alarm:", sjson.encode(alarm))
   collectgarbage()
 
   globalData.alarm = alarm
 end
 
-local function calculateAlarmState()
+local function calculatePartialAlarmState(wasser)
 
   local statusText
   local status
+  
+  local levelLow, levelHigh
 
   if globalData.wasser then
     levelLow = {globalData.wasser.levelLow}
@@ -131,6 +122,29 @@ local function calculateAlarmState()
   else
     statusText = "Alles trocken"
     status = 0
+  end
+
+  print("returning", statusText, status)
+  return statusText, status
+end
+
+local function calculateAlarmState()
+
+  local statusText
+  local status
+
+  statusText,status = calculatePartialAlarmState(globalData.wasser)
+  local t2,s2 = "", 0
+  if localData.remote.wasser then
+    print("analyse remote data")
+    t2,s2 = calculatePartialAlarmState(localData.remote.wasser)
+    if status == 0 and s2 > 0 then
+      statusText = "Remote "..t2
+      status = s2
+    elseif status > 0 and s2 > 0 then
+      statusText = statusText.." und remote "..t2
+      status = math.max(status,s2)
+    end
   end
   alarm(status)
   collectgarbage()
@@ -158,7 +172,7 @@ if config.type == "SEN" then  -- SEN = sensors
   
   localData.wasser = {}
 
-  tmr.create():alarm(4900, tmr.ALARM_AUTO, function()
+  local function readSensors()
 
     gpio.write(signalPin, gpio.LOW);  -- turn light on
     collectgarbage()
@@ -175,13 +189,38 @@ if config.type == "SEN" then  -- SEN = sensors
     gossip.pushGossip(localData)
     gpio.write(signalPin, gpio.HIGH);  -- turn light off
     calculateGlobalState()
-  end)
+  end
+
+  readSensors()
+  tmr.create():alarm(4900, tmr.ALARM_AUTO, readSensors)
 
 elseif config.type == "ALRM" then  -- ALRM = Alarm
 
   localData.alarm = {}
+  localData.remote = {}
   calculateAlarmState()
   calculateGlobalState()
+
+
+  local function readRemoteSensors()
+--[[    url = "http://unya840zxudxnekw.myfritz.net:8080/status"
+    print(body)
+    http.post(url, "", "", function(code, data)
+      if (code < 0) then
+        print("HTTP request failed")
+        localData.remote = {}
+      elseif code == 200 then
+        localData.remote = sjson.decode(data)
+      else
+        localData.remote = {}
+      end
+      print(code, data)
+    end)
+    collectgarbage() ]]
+  end
+  
+  readRemoteSensors()
+  tmr.create():alarm(4900, tmr.ALARM_AUTO, function() readRemoteSensors() calculateAlarmState() calculateGlobalState() end)
 
   gossip.updateCallback = function()
     node.task.post(function() calculateGlobalState() calculateAlarmState() calculateGlobalState() end, node.task.LOW_PRIORITY)
@@ -197,7 +236,7 @@ WebServer.route("/status", function(req, res)
     res:send_header("Content-Type", "application/json")
     res:send_header("Access-Control-Allow-Origin", "*")
   
-    local status = {wasser = globalData.wasser, status = globalData.alarm.statusText, name = config.name }
+    local status = {wasser = globalData.wasser, status = localData.alarm.statusText, name = config.name, rssi = wifi.sta.getrssi() }
     status = sjson.encode(status)
     print(status)
     res:send(status)
