@@ -56,12 +56,12 @@
 			]
 		},
 		"11264530": {
-			"name": "Gartensensor",
+			"name": "Schreibtisch",
 			"HW": "DevBoard1",
 			"startup": "Sensor.lua",
 			"type": "SEN",
 			"sensors": [{
-					"location": "Outdoor",
+					"location": "Indoor",
 					"id": 0,
 					"sda": 6,
 					"scl": 5,
@@ -83,7 +83,7 @@
 			"runGossip": false,
 			"runTelnetServer": true,
 			"leds": 33,
-			"channels": 3,
+			"channels": 4,
 			"layout": ["g", "r", "b"]
 		},
     "3649586": {
