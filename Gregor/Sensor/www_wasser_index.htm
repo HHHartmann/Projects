@@ -64,8 +64,8 @@ const app1 = reactive({
     app1
   }).mount()
 
-let url = '/status'
-//let url = 'http://192.168.178.87/status'
+//let url = '/status'
+let url = 'http://192.168.178.87/status'
 window.setInterval(() => app1.loadData(url), 5000);
 
 window.onload = () => app1.loadData(url);
@@ -112,7 +112,7 @@ window.onload = () => app1.loadData(url);
   <p class=MsoNormal >High Level reached</p>
   </th>
  </tr>
- <tr v-bind:style="'background-color:'+(app1.data.wasser.levelLow != 0 && app1.data.wasser.levelHigh != 0? '#CD5C5C':'lightgreen')">
+ <tr v-bind:style="'background-color:'+(app1.data.wasser.levelHigh != 0?'#CD5C5C': (app1.data.wasser.levelLow != 0? '':'lightgreen'))">
   <th width=95 >
   <p class=MsoNormal >Keller</p>
   </th>
