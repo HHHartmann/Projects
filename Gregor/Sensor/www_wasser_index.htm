@@ -64,8 +64,8 @@ const app1 = reactive({
     app1
   }).mount()
 
-//let url = '/status'
-let url = 'http://192.168.178.87/status'
+let url = '/status'
+//let url = 'http://192.168.178.87/status'
 window.setInterval(() => app1.loadData(url), 5000);
 
 window.onload = () => app1.loadData(url);
