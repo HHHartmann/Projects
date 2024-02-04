@@ -5,185 +5,16 @@
 <meta name=Generator content="Microsoft Word 15 (filtered)">
 <style>
 <!--
- /* Font Definitions */
- @font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:"Calibri Light";
-	panose-1:2 15 3 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
  /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin-top:0cm;
-	margin-right:0,5cm;
-	margin-bottom:8.0pt;
-	margin-left:0cm;
-	line-height:106%;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}
-h2
-	{mso-style-link:"Überschrift 2 Zchn";
-	margin-right:0cm;
-	margin-left:0cm;
-	font-size:18.0pt;
-	font-family:"Times New Roman",serif;}
 h3
-	{mso-style-link:"Überschrift 3 Zchn";
-	margin-top:2.0pt;
-	margin-right:0cm;
-	margin-bottom:0cm;
-	margin-left:0cm;
-	margin-bottom:.0001pt;
-	line-height:106%;
-	page-break-after:avoid;
-	font-size:12.0pt;
-	font-family:"Calibri Light",sans-serif;}
-p.msonormal0, li.msonormal0, div.msonormal0
-	{mso-style-name:msonormal;
-	margin-right:0cm;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Times New Roman",serif;}
-p.msochpdefault, li.msochpdefault, div.msochpdefault
-	{mso-style-name:msochpdefault;
-	margin-right:0cm;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Calibri",sans-serif;}
-p.msopapdefault, li.msopapdefault, div.msopapdefault
-	{mso-style-name:msopapdefault;
-	margin-right:0cm;
-	margin-bottom:8.0pt;
-	margin-left:0cm;
-	line-height:106%;
-	font-size:12.0pt;
-	font-family:"Times New Roman",serif;}
-span.berschrift2Zchn
-	{mso-style-name:"Überschrift 2 Zchn";
-	mso-style-link:"Überschrift 2";
-	font-family:"Calibri Light",sans-serif;
-	color:#2E74B5;}
-span.berschrift3Zchn
-	{mso-style-name:"Überschrift 3 Zchn";
-	mso-style-link:"Überschrift 3";
-	font-family:"Calibri Light",sans-serif;
-	color:#1F4D78;}
+	{margin-bottom:0cm;}
 table, th, td
 	{border: 1px solid black;  border-collapse: collapse;  padding: 5px;}
 table, td, p
   {text-align: center;}
-.MsoChpDefault
-	{font-size:10.0pt;
-	font-family:"Calibri",sans-serif;}
-.MsoPapDefault
-	{margin-bottom:8.0pt;
-	line-height:106%;}
-@page WordSection1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
-div.WordSection1
-	{page:WordSection1;}
 -->
 </style>
 <!--script src="https://unpkg.com/petite-vue" defer init></script-->
-</head>
-
-<body lang=DE>
-<div v-scope="{}">
-
-<a href="/log">show log</a>
-<a href="/log/on">log on</a>
-<a href="/log/off">log off</a>
-<a href="/info">info</a>
-<a href="/errors.txt">error</a>
-
-<div class=WordSection1>
-
-<h2>Lüftung des Kellers</h2>
-{{app1.data.name}}
-
-<p class=MsoNormal>&nbsp;</p>
-
-<h3>Status:</h3>
-{{app1.data.status}}
-<div>
-
-<p class=MsoNormal>&nbsp;</p>
-
-</div>
-
-<table class=MsoNormalTable" border-spacing="10px">
- <tr>
-  <th width=95 >
-  <p class=MsoNormal >&nbsp;</p>
-  </th>
-  <th width=89 >
-  <p class=MsoNormal >Temperatur (°C)</p>
-  </th>
-  <th width=68 >
-  <p class=MsoNormal >Rel. Feuchte (%)</p>
-  </th>
-  <th width=76 >
-  <p class=MsoNormal >Taupunkt (°C)</p>
-  </th>
-  <th width=76 >
-  <p class=MsoNormal >Lufthruck (hPa)</p>
-  </th>
- </tr>
- <tr v-for="item in app1.data.sensors.outdoor">
-  <th width=95 >
-  <p class=MsoNormal >{{ item.location }}</p>
-  </th>
-  <td width=89 >
-  <p class=MsoNormal align=right>{{ item.T.toFixed(1) }}</p>
-  </td>
-  <td width=68 >
-  <p class=MsoNormal align=right>{{ item.H.toFixed(1) }}</p>
-  </td>
-  <td ;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p class=MsoNormal align=right>{{ item.D.toFixed(1) }}</p>
-  </td>
-  <td ;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p class=MsoNormal align=right>{{ item.P.toFixed(1) }}</p>
-  </td>
- </tr>
- <tr v-for="item in app1.data.sensors.indoor">
-  <th width=95 >
-  <p class=MsoNormal >{{ item.location }}</p>
-  </th>
-  <td width=89 >
-  <p class=MsoNormal align=right>{{ item.T.toFixed(1) }}</p>
-  </td>
-  <td width=68 >
-  <p class=MsoNormal align=right>{{ item.H.toFixed(1) }}</p>
-  </td>
-  <td ;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p class=MsoNormal align=right>{{ item.D.toFixed(1) }}</p>
-  </td>
-  <td ;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p class=MsoNormal align=right>{{ item.P.toFixed(1) }}</p>
-  </td>
- </tr>
-</table>
-
-
-
-<p class=MsoNormal>&nbsp;</p>
-
-</div>
-
-{{ app1.state }}&nbsp;
-<br>
-Empfang:&nbsp{{app1.data.rssi}}<span style="background-color: #CD5C5C;"> sadsad </span>
-</div>
-
 
 <script type="module">
 import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
@@ -234,12 +65,114 @@ const app1 = reactive({
   }).mount()
 
 let url = '/status'
-//let url = 'http://192.168.178.47/status'
+//let url = 'http://192.168.178.76/status'
 window.setInterval(() => app1.loadData(url), 5000);
 
 window.onload = () => app1.loadData(url);
 
 </script>
+
+
+</head>
+
+<body lang=DE>
+<div v-scope="{}">
+
+<a href="/log">show log</a>
+<a href="/log/on">log on</a>
+<a href="/log/off">log off</a>
+<a href="/info">info</a>
+<a href="/errors.txt">error</a>
+<a href="/update.htm">dashboard</a>
+
+<!-- end common header -->
+
+<div>
+
+<h2>Lüftung des Kellers</h2>
+{{app1.data.name}}
+
+<p>&nbsp;</p>
+
+<h3>Status:</h3>
+{{app1.data.status}}
+<div>
+
+<p>&nbsp;</p>
+
+</div>
+
+<table border-spacing="10px">
+ <tr>
+  <th width=95 >
+  <p >&nbsp;</p>
+  </th>
+  <th width=89 >
+  <p >Temperatur (°C)</p>
+  </th>
+  <th width=68 >
+  <p >Rel. Feuchte (%)</p>
+  </th>
+  <th width=76 >
+  <p >Taupunkt (°C)</p>
+  </th>
+  <th width=76 >
+  <p >Lufthruck (hPa)</p>
+  </th>
+ </tr>
+ <tr v-for="item in app1.data.sensors.outdoor">
+  <th width=95 >
+  <p >{{ item.location }}</p>
+  </th>
+  <td width=89 >
+  <p align=right>{{ item.T.toFixed(1) }}</p>
+  </td>
+  <td width=68 >
+  <p align=right>{{ item.H.toFixed(1) }}</p>
+  </td>
+  <td ;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p align=right>{{ item.D.toFixed(1) }}</p>
+  </td>
+  <td ;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p align=right>{{ item.P.toFixed(1) }}</p>
+  </td>
+ </tr>
+ <tr v-for="item in app1.data.sensors.indoor">
+  <th width=95 >
+  <p >{{ item.location }}</p>
+  </th>
+  <td width=89 >
+  <p align=right>{{ item.T.toFixed(1) }}</p>
+  </td>
+  <td width=68 >
+  <p align=right>{{ item.H.toFixed(1) }}</p>
+  </td>
+  <td ;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p align=right>{{ item.D.toFixed(1) }}</p>
+  </td>
+  <td ;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p align=right>{{ item.P.toFixed(1) }}</p>
+  </td>
+ </tr>
+</table>
+
+
+<!--   start common footer  -->
+
+<p/>
+
+</div>
+
+{{ app1.state }}&nbsp;
+<br>
+Empfang:&nbsp<span v-bind:style="'background-color:'+(app1.data.rssi < -82? '#CD5C5C':(app1.data.rssi < -60?'yellow':'#5CCD5C'))"> {{app1.data.rssi}} </span>
+</div>
+
+
 </body>
 
 </html>
