@@ -147,6 +147,12 @@ div.WordSection1
 <p class=MsoNormal>&nbsp;</p>
 
 {{ app1.files }}&nbsp;
+<p class=MsoNormal>&nbsp;</p>
+
+{{ app1.hosts }}&nbsp;
+<p class=MsoNormal>&nbsp;</p>
+
+{{ app1.config1 }}&nbsp;
 <br>
 </div>
 
@@ -181,7 +187,7 @@ const app1 = reactive({
         xhr.send();
     },
 
-    loadData(url){
+    loadData() {
       function getData(ip, description) {
         app1.getJSON(`http://${ip}/download/FileDistState.json`,  function(err, data1) {
 
@@ -205,28 +211,69 @@ const app1 = reactive({
         })
       }
 
-      getData("192.168.178.84", "Wasser Sensor")
-      getData("192.168.178.87", "Wasser Alarm")
-      getData("192.168.178.47", "Keller Sensor")
-      getData("192.168.178.76", "Garten Sensor")
-      getData("192.168.178.56", "Lüftung")
-      getData("192.168.178.88", "Kellertreppe")
-      getData("192.168.178.91", "der Neue 1")
-      getData("192.168.178.94", "Sonoff Basic 1")
-      getData("192.168.178.83", "Battery 1")
+      for (const ip in app1.hosts) {
+        getData(ip, app1.hosts[ip])
+      }
+    },
+
+    loadConfig(){
+      app1.getJSON(configUrl,  function(err, data1) {
+
+        if (err) {
+          console.error(err);
+          
+        } else {
+          app1.config1 = data1.devices
+        }
+      })
+    },
+
+    loadIps(){
+        if (! app1.config1) {
+            app1.loadConfig();
+            return;
+        }
+        app1.getJSON(ipsUrl,  function(err, data1) {
+
+        if (err) {
+          console.error(err);
+          
+        } else {
+          app1.hosts = data1
+          for (const ip in data1) {
+            if (!!app1.config1[data1[ip]]) {
+              app1.hosts[ip] = app1.config1[data1[ip]].name
+            }
+          }
+        }
+      })
     }
-})
+  }
+)
 
  createApp({
     // share it with app scopes
     app1
   }).mount()
 
+var ipsUrl = '/knownIps'
+var configUrl = '/download/config.json'
+if ( window.location.href.startsWith('file')) {
+  ipsUrl = 'http://192.168.0.10' + ipsUrl
+  configUrl = 'http://192.168.0.10' + configUrl
+}
+
+
 app1.other = {}
 app1.files = {}
 window.setInterval(() => app1.loadData(), 5000);
+window.setInterval(() => app1.loadIps(), 19700);
 
-window.onload = () => app1.loadData();
+window.onload = () => { 
+  //app1.loadConfig();
+  app1.loadIps();
+  app1.loadData();
+}
 
 </script>
 </body>

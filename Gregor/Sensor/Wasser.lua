@@ -236,7 +236,7 @@ WebServer.route("/status", function(req, res)
     res:send_header("Content-Type", "application/json")
     res:send_header("Access-Control-Allow-Origin", "*")
   
-    local status = {wasser = globalData.wasser, status = localData.alarm.statusText, name = config.name, rssi = wifi.sta.getrssi() }
+    local status = {wasser = globalData.wasser, status = globalData.alarm.statusText, name = config.name, rssi = wifi.sta.getrssi() }
     status = sjson.encode(status)
     print(status)
     res:send(status)
