@@ -5,87 +5,13 @@
 <meta name=Generator content="Microsoft Word 15 (filtered)">
 <style>
 <!--
- /* Font Definitions */
- @font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:"Calibri Light";
-	panose-1:2 15 3 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
  /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin-top:0cm;
-	margin-right:0,5cm;
-	margin-bottom:8.0pt;
-	margin-left:0cm;
-	line-height:106%;
-	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;}
-h2
-	{mso-style-link:"Überschrift 2 Zchn";
-	margin-right:0cm;
-	margin-left:0cm;
-	font-size:18.0pt;
-	font-family:"Times New Roman",serif;}
 h3
-	{mso-style-link:"Überschrift 3 Zchn";
-	margin-top:2.0pt;
-	margin-right:0cm;
-	margin-bottom:0cm;
-	margin-left:0cm;
-	margin-bottom:.0001pt;
-	line-height:106%;
-	page-break-after:avoid;
-	font-size:12.0pt;
-	font-family:"Calibri Light",sans-serif;}
-p.msonormal0, li.msonormal0, div.msonormal0
-	{mso-style-name:msonormal;
-	margin-right:0cm;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Times New Roman",serif;}
-p.msochpdefault, li.msochpdefault, div.msochpdefault
-	{mso-style-name:msochpdefault;
-	margin-right:0cm;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Calibri",sans-serif;}
-p.msopapdefault, li.msopapdefault, div.msopapdefault
-	{mso-style-name:msopapdefault;
-	margin-right:0cm;
-	margin-bottom:8.0pt;
-	margin-left:0cm;
-	line-height:106%;
-	font-size:12.0pt;
-	font-family:"Times New Roman",serif;}
-span.berschrift2Zchn
-	{mso-style-name:"Überschrift 2 Zchn";
-	mso-style-link:"Überschrift 2";
-	font-family:"Calibri Light",sans-serif;
-	color:#2E74B5;}
-span.berschrift3Zchn
-	{mso-style-name:"Überschrift 3 Zchn";
-	mso-style-link:"Überschrift 3";
-	font-family:"Calibri Light",sans-serif;
-	color:#1F4D78;}
+	{margin-bottom:0cm;}
 table, th, td
 	{border: 1px solid black;  border-collapse: collapse;  padding: 5px;}
 table, td, p
   {text-align: center;}
-.MsoChpDefault
-	{font-size:10.0pt;
-	font-family:"Calibri",sans-serif;}
-.MsoPapDefault
-	{margin-bottom:8.0pt;
-	line-height:106%;}
-@page WordSection1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
-div.WordSection1
-	{page:WordSection1;}
 -->
 </style>
 <!--script src="https://unpkg.com/petite-vue" defer init></script-->
@@ -100,57 +26,51 @@ div.WordSection1
 <a href="/info">info</a>
 <a href="/errors.txt">error</a>
 
-<div class=WordSection1>
+<div>
 
 <h2>file update and distribution</h2>
 
-<p class=MsoNormal>&nbsp;</p>
+<p>&nbsp;</p>
 
-<p class=MsoNormal>&nbsp;</p>
+<p>&nbsp;</p>
 </div>
 
-<table class=MsoNormalTable" border-spacing="10px">
+<table border-spacing="10px">
  <tr>
   <th width=95 >
-  <p class=MsoNormal >File Name</p>
+  <p>File Name</p>
   </th>
-  <!--th width=89 >
-  <p class=MsoNormal >Size</p>
-  </th>
-  <th width=68 >
-  <p class=MsoNormal >Version</p>
-  </th-->
   <th width=66 v-for="(v, k) in app1.other">
-  <p class=MsoNormal ><a v-bind:href="'http://'+k+'/index.htm'">{{ k }} {{ v.desc }}</a></p>
+  <p><a v-bind:href="'http://'+k+'/index.htm'">{{ k }} {{ v.desc }}</a></p>
   </th>
  </tr>
  <tr v-for="(value, key) in app1.files">
-  <th width=95 >
-  <p class=MsoNormal >{{ key }}</p>
+  <th width=95>
+  <p>{{ key }}</p>
   </th>
-  <!--td width=89 >
-  <p class=MsoNormal align=right>{{ value.size }}</p>
+  <!--td width=89>
+  <p align=right>{{ value.size }}</p>
   </td>
-  <td width=68 >
-  <p class=MsoNormal align=right>{{ value.version }}</p>
+  <td width=68>
+  <p align=right>{{ value.version }}</p>
   </td-->
   <td width=66  v-for="(v, k) in app1.other" v-bind:bgcolor="app1.other[k].valid?((app1.other[k].data[key].version < app1.files[key])?'#ffaaaa':'#aaffaa'):((app1.other[k].data[key].version < app1.files[key])?'#cc8888':'#88cc88')">
-  <p class=MsoNormal align=right><span>{{ app1.other[k].data[key].version }}</span></p>
+  <p align=right><span>{{ app1.other[k].data[key].version }}</span></p>
   </td>
  </tr>
 </table>
 
 
 
-<p class=MsoNormal>&nbsp;</p>
+<p>&nbsp;</p>
 {{app1.other}}
-<p class=MsoNormal>&nbsp;</p>
+<p>&nbsp;</p>
 
 {{ app1.files }}&nbsp;
-<p class=MsoNormal>&nbsp;</p>
+<p>&nbsp;</p>
 
 {{ app1.hosts }}&nbsp;
-<p class=MsoNormal>&nbsp;</p>
+<p>&nbsp;</p>
 
 {{ app1.config1 }}&nbsp;
 <br>
@@ -259,8 +179,8 @@ const app1 = reactive({
 var ipsUrl = '/knownIps'
 var configUrl = '/download/config.json'
 if ( window.location.href.startsWith('file')) {
-  ipsUrl = 'http://192.168.0.10' + ipsUrl
-  configUrl = 'http://192.168.0.10' + configUrl
+  ipsUrl = 'http://192.168.126.223' + ipsUrl
+  configUrl = 'http://192.168.126.223' + configUrl
 }
 
 
@@ -270,9 +190,9 @@ window.setInterval(() => app1.loadData(), 5000);
 window.setInterval(() => app1.loadIps(), 19700);
 
 window.onload = () => { 
-  //app1.loadConfig();
-  app1.loadIps();
-  app1.loadData();
+  app1.loadConfig();
+  window.setTimeout(() => app1.loadIps(), 2000);
+  window.setTimeout(() => app1.loadData(), 3500);
 }
 
 </script>
