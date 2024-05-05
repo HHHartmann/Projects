@@ -1,5 +1,5 @@
 {
-	"debug": true,
+	"debug": false,
 	"runLogger": false,
 	"runFTPServer": false,
 	"runTelnetServer": false,
@@ -34,21 +34,35 @@
 		"5937828": {
 			"name": "der neue",
 			"HW": "WemosD1",
-			"startup": "Sensor.lua",
-      "smallFs": true,
-			"type": "VEN",
-			"relais": 4
+			"startup": "Wasser.lua",
+			"type": "SEN",
+			"sensors": [{
+					"location": "Keller",
+					"pinLow": 5,
+					"pinHigh": 6
+				}
+			]
+		},
+		"--5937828": {
+			"name": "der neue",
+			"HW": "WemosD1",
+			"startup": "LED-strip-remote.lua",
+			"runGossip": false,
+			"runTelnetServer": true,
+			"leds": 33,
+			"channels": 4,
+			"layout": ["g", "r", "b"]
 		},
 		"3942779": {
 			"name": "Kellersensor",
 			"HW": "DevBoard1",
 			"startup": "Sensor.lua",
-    	"runGossip": false,
-			"startup": "Meter.lua",
+    	"__runGossip": false,
+			"__startup": "Meter.lua",
 			"type": "SEN",
 			"sensors": [{
 					"location": "Indoor",
-					"id": 0,
+					"busId": 0,
 					"sda": 6,
 					"scl": 5,
 					"addr": 1
@@ -62,7 +76,7 @@
 			"type": "SEN",
 			"sensors": [{
 					"location": "Indoor",
-					"id": 0,
+					"busId": 0,
 					"sda": 6,
 					"scl": 5,
 					"addr": 1

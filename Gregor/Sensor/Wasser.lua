@@ -8,7 +8,7 @@ local globalData = {wasser = {}, alarm = {}}
 
 if config.type == "SEN" then
   if adc.force_init_mode(adc.INIT_ADC) then
-    print("reconfigured adc. Need to restart.")
+    Log.LogDebug("reconfigured adc. Need to restart.")
     node.restart()
   end
 
@@ -29,10 +29,10 @@ gpio.write(signalPin, gpio.HIGH)  -- turn light off
 local lastStatus
 local function alarm(status)
 
-  print("statuspin value",gpio.read(4))
+  Log.LogTrace("statuspin value",gpio.read(signalPin))
   if (lastStatus == status) then return end
   
-  print("-------------setting status to", status)
+  Log.LogDebug("-------------setting status to", status)
   lastStatus = status
   if status == 0 then
     pwm.setduty(signalPin, 1023)
@@ -51,7 +51,7 @@ local function alarm(status)
     gpio.mode(signalPin, gpio.OUTPUT)
     gpio.write(signalPin, gpio.LOW)  -- turn light on
   end
-  print("statuspin value",gpio.read(4))
+  Log.LogTrace("statuspin value",gpio.read(signalPin))
 end
 
 
@@ -79,17 +79,17 @@ local function calculateGlobalState()
   end
 
   -- TODO: remove "where v.data.sensordata" after LINQ bug with empty selectMany is fixed
-  print("networkState:", sjson.encode(gossip.networkState))
+  Log.LogTrace("networkState:", gossip.networkState)
   local _, wasser = LINQ(gossip.networkState):where(isValidData):where(isWasser):select(function(k,v) return k, v.data.wasser end):first();
   collectgarbage()
 
-  print("wasser:", wasser and sjson.encode(wasser) or "nil")
+  Log.LogDebug("wasser:", wasser or "nil")
   
   globalData.wasser = wasser
 
   local _, alarm = LINQ(gossip.networkState):where(isValidData):where(isAlarm):select(function(k,v) return k, v.data.alarm end):first()
   alarm = alarm or {statusText = "Keine Daten zum Alarm verfügbar", status = 0}
-  print("alarm:", sjson.encode(alarm))
+  Log.LogDebug("alarm:", alarm)
   collectgarbage()
 
   globalData.alarm = alarm
@@ -124,7 +124,7 @@ local function calculatePartialAlarmState(wasser)
     status = 0
   end
 
-  print("returning", statusText, status)
+  Log.LogTrace("returning", statusText, status)
   return statusText, status
 end
 
@@ -136,7 +136,7 @@ local function calculateAlarmState()
   statusText,status = calculatePartialAlarmState(globalData.wasser)
   local t2,s2 = "", 0
   if localData.remote.wasser then
-    print("analyse remote data")
+    Log.LogTrace("analyze remote data")
     t2,s2 = calculatePartialAlarmState(localData.remote.wasser)
     if status == 0 and s2 > 0 then
       statusText = "Remote "..t2
@@ -150,19 +150,19 @@ local function calculateAlarmState()
   collectgarbage()
 
   if (globalData.alarm and globalData.alarm.status == status and globalData.alarm.statusText == statusText) then
-    print("water unchanged. Not pushing.")
+    Log.LogDebug("water unchanged. Not pushing.")
     return
   end
   
   localData.alarm = {status=status, statusText=statusText}
-  print("pushing", sjson.encode(localData))
+  Log.LogDebug("pushing", localData)
   gossip.pushGossip(localData)
 end
 
 if config.type == "SEN" then  -- SEN = sensors
 
   local function calcLevel(rawValue)
-    print(rawValue)
+    Log.LogTrace(rawValue)
     if rawValue > 400 then
       return 1
     else
@@ -204,17 +204,17 @@ elseif config.type == "ALRM" then  -- ALRM = Alarm
 
   local function readRemoteSensors()
 --[[    url = "http://unya840zxudxnekw.myfritz.net:8080/status"
-    print(body)
+    Log.LogTrace(body)
     http.post(url, "", "", function(code, data)
       if (code < 0) then
-        print("HTTP request failed")
+        Log.LogTrace("HTTP request failed")
         localData.remote = {}
       elseif code == 200 then
         localData.remote = sjson.decode(data)
       else
         localData.remote = {}
       end
-      print(code, data)
+      Log.LogTrace(code, data)
     end)
     collectgarbage() ]]
   end
@@ -238,7 +238,7 @@ WebServer.route("/status", function(req, res)
   
     local status = {wasser = globalData.wasser, status = globalData.alarm.statusText, name = config.name, rssi = wifi.sta.getrssi() }
     status = sjson.encode(status)
-    print(status)
+    Log.LogTrace("returning", status)
     res:send(status)
     status = nil
     res:finish()

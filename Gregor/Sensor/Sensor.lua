@@ -20,22 +20,22 @@ local status, err
 local s1,s2
 
 local function setupI2c(config)
-    print("i2c.setup")
-    status, err = pcall(function() i2c.setup(config.id, config.sda, config.scl, i2c.SLOW) end)
-    print(status, err)
+    Log.LogTrace("i2c.setup")
+    status, err = pcall(function() i2c.setup(config.busId, config.sda, config.scl, i2c.SLOW) end)
+    Log.LogTrace(status, err)
 end
 
 if config.type == "SEN" then
     local bme280 = node.LFS.bme280() -- needed to hide legacy bme280 module
     setupI2c(c1)
-    print("bme280.setup")
-    status, err = pcall(function() s1 = bme280.setup(c1.id, c1.addr, nil, nil, nil, 0) end) -- initialize to sleep mode
+    Log.LogTrace("bme280.setup")
+    status, err = pcall(function() s1 = bme280.setup(c1.busId, c1.addr, nil, nil, nil, 0) end) -- initialize to sleep mode
     if c2 ~= nil then
       setupI2c(c2)
-      print("bme280.setup")
-      status, err = pcall(function() s2 = bme280.setup(c2.id, c2.addr, nil, nil, nil, 0) end) -- initialize to sleep mode
+      Log.LogTrace("bme280.setup")
+      status, err = pcall(function() s2 = bme280.setup(c2.busId, c2.addr, nil, nil, nil, 0) end) -- initialize to sleep mode
     end
-    print("done")
+    Log.LogTrace("done")
 end
 
 local status = "Unbekannt"
@@ -60,7 +60,7 @@ local function sendData(data)
   --[[ don't send for now
   if sending then
     nextData = data
-    print("Defering sendData")
+    Log.LogTrace("Defering sendData")
     return
   end
   sending = true
@@ -68,14 +68,14 @@ local function sendData(data)
   local body = sjson.encode(data)
   http.post(url, "X-Auth-Token: BBFF-g0qMTBSw6uDleQdFNoWJRNRZniWouS\r\nContent-Type: application/json\r\n", body, function(code, data)
     if (code < 0) then
-      print("HTTP request failed")
+      Log.LogTrace("HTTP request failed")
     end
-    print(code, data)
+    Log.LogTrace(code, data)
     sending = false
     if nextData then
       local localData = nextData
       nextData = nil
-      print("Executing defered sendData")
+      Log.LogTrace("Executing defered sendData")
       return sendData(localData)   -- tailcall
     end
   end)
@@ -86,10 +86,10 @@ end
 local function validate(s, T, P, H)
     if s and T and P and H then
       local D = s:dewpoint(H, T)
-      print(("T=%.2f°C, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f°C"):format(T, P, H, D))
+      Log.LogTrace(("T=%.2f°C, pressure=%.3f HPa, humidity=%.3f%%, dewpoint=%.2f°C"):format(T, P, H, D))
       return {T=T, P=P, H=H, D=D}
     else
-      print(s, T, P, H)
+      Log.LogTrace(s, T, P, H)
       return nil
     end
 end
@@ -119,24 +119,24 @@ local function calculateGlobalState()
 
   collectgarbage()
   -- TODO: remove "where v.data.sensordata" after LINQ bug with empty selectMany is fixed
-  print("networkState:", sjson.encode(gossip.networkState))
+  Log.LogTrace("networkState:", gossip.networkState)
   local sensors = LINQ(gossip.networkState):where(isValidData):where(isSensor):selectMany(getSensors):toListValue()
   collectgarbage()
 
-  print("sensordaten:", sjson.encode(sensors))
+  Log.LogDebug("sensordaten:", sensors)
 
   local indoor = LINQ(sensors):where(function(k,v) return v.location == "Indoor" end):toListValue()
   local outdoor = LINQ(sensors):where(function(k,v) return v.location == "Outdoor" end):toListValue()
   sensors = nil
   
-  print("indoor:", sjson.encode(indoor))
-  print("outdoor:", sjson.encode(outdoor))
+  Log.LogTrace("indoor:", indoor)
+  Log.LogTrace("outdoor:", outdoor)
 
   globalData.sensors = {indoor=indoor,outdoor=outdoor }
 
   local _, venting = LINQ(gossip.networkState):where(isValidData):where(isVenting):select(function(k,v) return k, v.data.venting end):first()
   venting = venting or {statusText = "Keine Daten zur Lüftung verfügbar"}
-  print("venting:", sjson.encode(venting))
+  Log.LogDebug("venting:", venting)
   collectgarbage()
 
   globalData.venting = venting
@@ -182,12 +182,12 @@ local function calculateVentingState()
   sendData(data)
 
   if (globalData.venting and globalData.venting.status == status and globalData.venting.statusText == statusText) then
-    print("venting unchanged. Not pushing.")
+    Log.LogDebug("venting unchanged. Not pushing.")
     return
   end
   
   localData.venting = {status=status, statusText=statusText}
-  print("pushing", sjson.encode(localData))
+  Log.LogDebug("pushing", localData)
   gossip.pushGossip(localData)
 end
 
@@ -209,7 +209,7 @@ if config.type == "SEN" then  -- SEN = sensors
       if s1 ~= nil then 
         setupI2c(c1)
         s1:startreadout(function(T, P, H)
-            print(1,T,P,H)
+            Log.LogTrace(1,T,P,H)
             if not T or not P or not H then return end
             localData.sensordata[1] = validate(s1, T, P, H)
             localData.sensordata[1].location = c1.location
@@ -218,7 +218,7 @@ if config.type == "SEN" then  -- SEN = sensors
               node.task.post(function()
                   setupI2c(c2)
                   s2:startreadout(function(T, P, H)
-                      print(2,T,P,H)
+                      Log.LogTrace(2,T,P,H)
                       localData.sensordata[2] = validate(s2, T, P, H)
                       localData.sensordata[2].location = c2.location
                       sendSensorData(localData.sensordata[2])
@@ -282,7 +282,7 @@ WebServer.route("/status", function(req, res)
   
     local status = {sensors = globalData.sensors, status = globalData.venting.statusText, name = config.name, rssi = wifi.sta.getrssi() }
     status = sjson.encode(status)
-    print(status)
+    Log.LogTrace("sending", status)
     res:send(status)
     status = nil
     res:finish()
