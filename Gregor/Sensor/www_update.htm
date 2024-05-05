@@ -41,7 +41,7 @@ table, td, p
   <p>File Name</p>
   </th>
   <th width=66 v-for="(v, k) in app1.other">
-  <p><a v-bind:href="'http://'+k+'/index.htm'">{{ k }} {{ v.desc }}</a></p>
+  <p><a v-if="v.ip" v-bind:href="'http://'+v.ip+'/index.htm'">{{ v.ip }} {{ v.desc }}</a><div v-if="!v.ip" >{{ k }} {{ v.desc }}</div></p>
   </th>
  </tr>
  <tr v-for="(value, key) in app1.files">
@@ -108,18 +108,16 @@ const app1 = reactive({
     },
 
     loadData() {
-      function getData(ip, description) {
-        app1.getJSON(`http://${ip}/download/FileDistState.json`,  function(err, data1) {
+      function getData(id, host) {
+        app1.getJSON(`http://${host.ip}/download/FileDistState.json`,  function(err, data1) {
 
           if (err) {
-            if (! app1.other[ip]) {
-              app1.other[ip] = {desc: description}
-            }
             console.error(err);
-            app1.other[ip].valid = false;
+            app1.other[id].valid = false;
             
           } else {
-            app1.other[ip] = { desc: description, data: data1, valid: true }
+            app1.other[id].data = data1;
+            app1.other[id].valid = true
             for (const fileName in data1) {
               if (! app1.files[fileName]) {
                 app1.files[fileName] = data1[fileName].version
@@ -131,8 +129,16 @@ const app1 = reactive({
         })
       }
 
-      for (const ip in app1.hosts) {
-        getData(ip, app1.hosts[ip])
+      for (const id in app1.hosts) {
+        if (! app1.other[id]) {
+          app1.other[id] = {desc: app1.hosts[id].name}
+        }
+        if (app1.hosts[id].ip) {
+          app1.other[id].ip = app1.hosts[id].ip
+          getData(id, app1.hosts[id])
+        } else {
+          app1.other[id] = { desc: app1.hosts[id].name, valid: true }
+        }
       }
     },
 
@@ -144,6 +150,12 @@ const app1 = reactive({
           
         } else {
           app1.config1 = data1.devices
+          for (const id in data1.devices) {
+            if (!app1.hosts[id]) {
+              app1.hosts[id] = {}
+            }
+            app1.hosts[id].name = data1.devices[id].name
+          }
         }
       })
     },
@@ -159,10 +171,9 @@ const app1 = reactive({
           console.error(err);
           
         } else {
-          app1.hosts = data1
           for (const ip in data1) {
-            if (!!app1.config1[data1[ip]]) {
-              app1.hosts[ip] = app1.config1[data1[ip]].name
+            if (!!app1.hosts[data1[ip]]) {
+              app1.hosts[data1[ip]].ip = ip
             }
           }
         }
@@ -183,6 +194,7 @@ if ( window.location.href.startsWith('file')) {
   configUrl = 'http://192.168.126.223' + configUrl
 }
 
+app1.hosts = {}
 
 app1.other = {}
 app1.files = {}
