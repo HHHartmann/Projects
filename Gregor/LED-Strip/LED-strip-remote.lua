@@ -76,7 +76,8 @@ local function main(framework)
 end
 
 -- set leds as soon as possible
-node.startup({command="ws2812.init(ws2812.MODE_SINGLE) ws2812.write(string.rep(string.char(0, 0, 255),33)) dofile('init.lua')"})
+--node.startup({command="ws2812.init(ws2812.MODE_SINGLE) ws2812.write(string.rep(string.char(255, 255, 255, 255),10)..string.rep(string.char(255, 255, 255, 0),10)..string.rep(string.char(0, 0, 0, 255),26)) dofile('init.lua')"})
+node.startup({command="ws2812.init(ws2812.MODE_SINGLE) ws2812.write(string.rep(string.char(0, 0, 0, 255),76)) dofile('init.lua')"})
 
 local framework = dofile("SynchronousFramework.lua")
 framework.start(main, framework)
