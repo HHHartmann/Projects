@@ -1,28 +1,29 @@
+LEDRTCSlot = 10  -- uses 5 memory slots
+
 local function main(framework)
 
   local UDP
 
   local IP
 
-  LED_strip = require("LED-strip")
-
   local function UDPsend(msg)
     if IP then
       UDP.send(1234, IP, msg)
+    end
+  end
+
+  local function calculateEffects()
+    local filesList = file.list(".+%.[bB][mM][pP]")
+    Effects = {"static","blink","gradient","gradient_rgb","random_color","rainbow","rainbow_cycle","flicker","fire","fire_soft","fire_intense","halloween","circus_combustus","larson_scanner","cycle","color_wipe","random_dot"}
+    for k,v in pairs(filesList) do
+      Effects[#Effects + 1] = k
     end
   end
   
   local function sendFound(cmd, arg)
     IP = arg
     UDPsend("found")
-    local filesList = file.list(".+%.[bB][mM][pP]")
-    local files = {}
-    for k,v in pairs(filesList) do
-      files[#files + 1] = k
-    end
-    files = table.concat(files,",")
-    if #files > 0 then files = files .. "," end
-    UDPsend(files.."static,blink,gradient,gradient_rgb,random_color,rainbow,rainbow_cycle,flicker,fire,fire_soft,fire_intense,halloween,circus_combustus,larson_scanner,cycle,color_wipe,random_dot")
+    UDPsend(table.concat(Effects,","))
   end
   
   local function handleButton(cmd, arg) 
@@ -51,6 +52,10 @@ local function main(framework)
   local function listSettings(cmd, arg)
   end
 
+  calculateEffects()
+
+  LED_strip = require("LED-strip")
+
   UDP = dofile("UDP.lua")
 
   UDP.init(1234, framework)
@@ -76,8 +81,8 @@ local function main(framework)
 end
 
 -- set leds as soon as possible
---node.startup({command="ws2812.init(ws2812.MODE_SINGLE) ws2812.write(string.rep(string.char(255, 255, 255, 255),10)..string.rep(string.char(255, 255, 255, 0),10)..string.rep(string.char(0, 0, 0, 255),26)) dofile('init.lua')"})
-node.startup({command="ws2812.init(ws2812.MODE_SINGLE) ws2812.write(string.rep(string.char(0, 0, 0, 255),76)) dofile('init.lua')"})
+node.startup({command="if (rtcmem.read32(10) ~= 0815) then ws2812.init(ws2812.MODE_SINGLE) ws2812.write(string.rep(string.char(0, 0, 0, 255),76)) end dofile('init.lua')"})
 
 local framework = dofile("SynchronousFramework.lua")
 framework.start(main, framework)
+--node.startup({command="ws2812.init(ws2812.MODE_SINGLE) ws2812.write(string.rep(string.char(255, 255, 255, 255),10)..string.rep(string.char(255, 255, 255, 0),10)..string.rep(string.char(0, 0, 0, 255),26)) dofile('init.lua')"})

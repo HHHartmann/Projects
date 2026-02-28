@@ -22,6 +22,12 @@
     ws2812_effects.set_delay(delay)
     ws2812_effects.set_brightness(brightness)
     --ws2812_effects.set_mode(effect)
+    rtcmem.write32(LEDRTCSlot+0, 0815)
+    rtcmem.write32(LEDRTCSlot+1, speed)
+    rtcmem.write32(LEDRTCSlot+2, delay)
+    rtcmem.write32(LEDRTCSlot+3, brightness)
+    print("Written config setLED", rtcmem.read32(LEDRTCSlot+0, 5))
+
     if (timer:state()) then
       timer:interval(delay+2)
       timer:stop()
@@ -110,6 +116,15 @@
     setLED()
   end
 
+  local function findIndex(array, value)
+      for i, v in ipairs(array) do
+          if v == value then
+              return i
+          end
+      end
+      return -1
+  end
+
   local function setEffect(arg, replay)
     effect = arg
     if file.exists(effect) then
@@ -122,6 +137,11 @@
       ws2812_effects.start()
       ws2812_effects.set_mode(effect)
     end
+    
+    rtcmem.write32(LEDRTCSlot+0, 0815)
+    effect = rtcmem.write32(LEDRTCSlot+4, findIndex(Effects, effect))
+    print("Written config setEffect", rtcmem.read32(LEDRTCSlot, 5))
+
   end
 
   local function setColor(arg)
@@ -136,14 +156,25 @@
     strip_buffer:fill(mapChannels(r,g,b))
     ws2812.write(strip_buffer)
     ws2812_effects.set_color(mapChannels(r,g,b))
-  end 
+  end
 
   ws2812.init(ws2812.MODE_SINGLE)
   strip_buffer = pixbuf.newBuffer(config.leds, config.channels)
   ws2812_effects.init(strip_buffer)
+
+  if (rtcmem.read32(LEDRTCSlot) == 0815 and rtcmem.read32(LEDRTCSlot+2) > 9) then
+    speed = rtcmem.read32(LEDRTCSlot+1)
+    delay = rtcmem.read32(LEDRTCSlot+2)
+    brightness = rtcmem.read32(LEDRTCSlot+3)
+    effect = Effects[rtcmem.read32(LEDRTCSlot+4)]
+    print("read ", speed, delay, brightness, effect)
+  end
+  print("rtc:", rtcmem.read32(LEDRTCSlot+0, 5))
+  print("init with ", speed, delay, brightness, effect)
+  
   ws2812_effects.set_color(mapChannels(255,255,255))
   setLED()
-  setEffect("static")
+  setEffect(effect)
   --setEffect("start.bmp", 1)
 
 return { setEffect=setEffect, setColor=setColor, setSpeed=setSpeed, setDelay=setDelay, setBrightness=setBrightness}
